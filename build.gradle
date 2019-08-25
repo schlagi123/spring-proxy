@@ -1,0 +1,28 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+
+group 'de.baswil.spring'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+test {
+    //we want display the following test events
+    testLogging {
+        // set options for log level LIFECYCLE
+        events "failed", "started", "skipped", "failed"
+    }
+}
+
+dependencies {
+    compile 'org.springframework.boot:spring-boot-starter:2.1.7.RELEASE'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.codehaus.groovy:groovy-all:2.5.8'
+    testCompile 'org.spockframework:spock-core:1.3-groovy-2.5'
+}
