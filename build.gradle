@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'groovy'
     id 'info.solidsoft.pitest' version '1.4.0'
+    id "com.jfrog.bintray" version '1.8.4'
+    id "maven-publish"
 }
 
 group 'de.baswil.spring'
@@ -43,3 +45,87 @@ pitest {
     timestampedReports = false
 }
 
+// deploy
+task sourcesJar(type: Jar, dependsOn: classes) {
+    from sourceSets.main.allSource
+    archiveClassifier = 'sources'
+}
+
+javadoc.failOnError = false
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    from javadoc.destinationDir
+    archiveClassifier = 'javadoc'
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+
+def pomConfig = {
+    licenses {
+        license {
+            name "MIT"
+            url "https://bitbucket.org/schlagi123/spring-http-s-proxy-settings"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "schlagi123"
+            name "Bastian Wilhelm"
+            email "bw-dev@mailbox.org"
+        }
+    }
+
+    scm {
+        url "https://bitbucket.org/schlagi123/spring-http-s-proxy-settings"
+    }
+}
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId project.group
+            artifactId project.name
+            version project.version
+
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'A library with for handling proxy settings simpler in SpringBoot Projects')
+                root.appendNode('name', 'Spring Proxy')
+                root.appendNode('url', 'https://bitbucket.org/schlagi123/spring-http-s-proxy-settings')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = 'https://bintray.com/schlagi123/own-maven'
+
+        }
+    }
+}
+
+bintray {
+    user = System.getProperty("bintry-username")
+    key = System.getProperty("bintry-key")
+    publications = ['mavenPublication']
+
+    pkg {
+        repo = 'own-maven'
+        name = project.name
+        licenses = ['MIT']
+        websiteUrl = 'https://bitbucket.org/schlagi123/spring-http-s-proxy-settings'
+        issueTrackerUrl = 'https://bitbucket.org/schlagi123/spring-http-s-proxy-settings/issues'
+        vcsUrl = 'https://bitbucket.org/schlagi123/spring-http-s-proxy-settings.git'
+        version {
+            name = project.version
+            released = new Date()
+        }
+    }
+}
