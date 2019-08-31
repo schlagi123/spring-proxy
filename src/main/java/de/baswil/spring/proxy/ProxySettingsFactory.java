@@ -35,7 +35,7 @@ class ProxySettingsFactory {
                                                          String javaPropertyUser,
                                                          String javaPropertyPassword) {
         if (javaPropertyHost != null) {
-            if(javaPropertyHost.trim().isEmpty()){
+            if (javaPropertyHost.trim().isEmpty()) {
                 proxySettings.setHost(null);
             } else {
                 proxySettings.setHost(javaPropertyHost);
@@ -43,43 +43,40 @@ class ProxySettingsFactory {
         }
 
         if (javaPropertyPort != null) {
-            if(javaPropertyPort.trim().isEmpty()){
+            if (javaPropertyPort.trim().isEmpty()) {
                 proxySettings.setPort(null);
             } else {
                 try {
                     int portNumber = Integer.parseInt(javaPropertyPort);
-                    if(portNumber < 0) {
-                        ProxyApplicationListener.LOGGER.warn("Find Port Number Less Then 0. Set Port Number To null.");
-                        proxySettings.setPort(null);
+                    if (portNumber <= 0) {
+                        ProxyApplicationListener.LOGGER.warn("Find Port Number Less Then Or Equals 0. Set Port Number To null.");
                     } else {
                         proxySettings.setPort(portNumber);
                     }
-                } catch (NumberFormatException e){
+                } catch (NumberFormatException e) {
                     ProxyApplicationListener.LOGGER.warn("Find Port Number That Is No Integer. Set Port Number To null.");
-                    proxySettings.setPort(null);
                 }
             }
         }
 
         if (javaPropertyUser != null) {
-            if(javaPropertyUser.trim().isEmpty()){
+            if (javaPropertyUser.trim().isEmpty()) {
                 proxySettings.setUser(null);
-                proxySettings.setPassword(null);
             } else {
                 proxySettings.setUser(javaPropertyUser);
             }
         }
 
         if (javaPropertyPassword != null) {
-            if(javaPropertyPassword.trim().isEmpty()){
+            if (javaPropertyPassword.trim().isEmpty()) {
                 proxySettings.setPassword(null);
             } else {
-                if(proxySettings.getUser() == null){
-                    proxySettings.setPassword(null);
-                } else {
-                    proxySettings.setPassword(javaPropertyPassword);
-                }
+                proxySettings.setPassword(javaPropertyPassword);
             }
+        }
+
+        if (proxySettings.getUser() == null && proxySettings.getPassword() != null) {
+            proxySettings.setPassword(null);
         }
     }
 
@@ -94,7 +91,7 @@ class ProxySettingsFactory {
             return proxySettings;
         }
 
-        if(url.getHost().trim().isEmpty()){
+        if (url.getHost().trim().isEmpty()) {
             ProxyApplicationListener.LOGGER.warn("Proxy Url Has Malformed Format. Host Is Empty. Ignore Url for proxy Parameters");
             return proxySettings;
         }
@@ -120,7 +117,7 @@ class ProxySettingsFactory {
 
     public String createNoProxy(String osProperty, String javaProperty) {
         if (javaProperty != null) {
-            if(javaProperty.trim().isEmpty()){
+            if (javaProperty.trim().isEmpty()) {
                 return null;
             } else {
                 return javaProperty;
@@ -131,7 +128,7 @@ class ProxySettingsFactory {
 
             for (String osPropertyHost : osPropertySplit) {
                 osPropertyHost = osPropertyHost.trim();
-                if(osPropertyHost.startsWith(".")){
+                if (osPropertyHost.startsWith(".")) {
                     osPropertyHost = "*" + osPropertyHost;
                 }
                 stringJoiner.add(osPropertyHost);

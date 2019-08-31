@@ -106,7 +106,7 @@ class ProxySettingsFactoryCreateProxySpec extends Specification {
 
     def "create proxy only from java Properties with password and without username"() {
         when:
-        def currentResult = proxySettingsFactory.createProxySettings(null, "localhost", "8080", null, "password")
+        def currentResult = proxySettingsFactory.createProxySettings("http://test:test@localhost:8080", "localhost", "8080", "", "password")
 
         then:
         with(currentResult, {
@@ -131,7 +131,7 @@ class ProxySettingsFactoryCreateProxySpec extends Specification {
         })
 
         where:
-        javaPort << ["-1", "bla"]
+        javaPort << ["-1", "0", "bla"]
     }
 
     @Unroll

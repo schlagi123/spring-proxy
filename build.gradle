@@ -1,5 +1,8 @@
-apply plugin: 'java'
-apply plugin: 'groovy'
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'info.solidsoft.pitest' version '1.4.0'
+}
 
 group 'de.baswil.spring'
 version '1.0-SNAPSHOT'
@@ -25,4 +28,13 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.codehaus.groovy:groovy-all:2.5.8'
     testCompile 'org.spockframework:spock-core:1.3-groovy-2.5'
+    testCompile "cglib:cglib:3.3.0"
+    testCompile 'org.objenesis:objenesis:3.0.1'
 }
+
+pitest {
+    threads = 1
+    outputFormats = ['HTML']
+    timestampedReports = false
+}
+

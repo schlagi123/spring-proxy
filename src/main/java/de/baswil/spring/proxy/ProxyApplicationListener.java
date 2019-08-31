@@ -120,9 +120,9 @@ public class ProxyApplicationListener implements ApplicationListener<Application
     private void setSystemProperty(String systemPropertyName, String systemPropertyValue, boolean password) {
         System.setProperty(systemPropertyName, systemPropertyValue);
         if(password){
-            LOGGER.trace("Set system property: " + JAVA_PROP_HTTP_PROXY_HOST + " = ******");
+            LOGGER.trace("Set system property: {} = ******", systemPropertyName);
         } else {
-            LOGGER.trace("Set system property: " + JAVA_PROP_HTTP_PROXY_HOST + " = " + systemPropertyValue);
+            LOGGER.trace("Set system property: {} = {}", systemPropertyName, systemPropertyValue);
         }
     }
 
