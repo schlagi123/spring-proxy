@@ -2,6 +2,7 @@ package de.baswil.spring.proxy;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.StringJoiner;
 
 class ProxySettingsFactory {
 
@@ -117,11 +118,26 @@ class ProxySettingsFactory {
         return proxySettings;
     }
 
-    public String createNoProxyPropertyValue(String osProperty, String javaProperty) {
+    public String createNoProxy(String osProperty, String javaProperty) {
         if (javaProperty != null) {
-            return javaProperty;
+            if(javaProperty.trim().isEmpty()){
+                return null;
+            } else {
+                return javaProperty;
+            }
         } else if (osProperty != null) {
-            return osProperty.replace(',', '|');
+            String[] osPropertySplit = osProperty.split(",");
+            StringJoiner stringJoiner = new StringJoiner("|");
+
+            for (String osPropertyHost : osPropertySplit) {
+                osPropertyHost = osPropertyHost.trim();
+                if(osPropertyHost.startsWith(".")){
+                    osPropertyHost = "*" + osPropertyHost;
+                }
+                stringJoiner.add(osPropertyHost);
+            }
+
+            return stringJoiner.toString();
         } else {
             return null;
         }

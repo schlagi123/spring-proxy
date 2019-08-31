@@ -3,7 +3,7 @@ package de.baswil.spring.proxy
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class ProxySettingsFactorySpec extends Specification {
+class ProxySettingsFactoryCreateProxySpec extends Specification {
     private ProxySettingsFactory proxySettingsFactory
 
     void setup() {
@@ -128,7 +128,7 @@ class ProxySettingsFactorySpec extends Specification {
             port == null
             user == "user"
             password == "password"
-        });
+        })
 
         where:
         javaPort << ["-1", "bla"]
@@ -159,10 +159,10 @@ class ProxySettingsFactorySpec extends Specification {
         currentResult == expectedResult
 
         where:
-        osProperty                            || javaHost    || javaPort || javaUser || javaPassword || expectedResult
-        "http://user:password@localhost:8080" || null        || null     || null     || ""           || new ProxySettings(host: "localhost", port: 8080, user: "user", password: null)
-        "http://user:password@localhost:8080" || null        || null     || ""       || null         || new ProxySettings(host: "localhost", port: 8080, user: null, password: null)
-        "http://user:password@localhost:8080" || null        || ""       || null     || null         || new ProxySettings(host: "localhost", port: null, user: "user", password: "password")
-        "http://user:password@localhost:8080" || ""          || null     || null     || null         || null
+        osProperty                            || javaHost || javaPort || javaUser || javaPassword || expectedResult
+        "http://user:password@localhost:8080" || null     || null     || null     || ""           || new ProxySettings(host: "localhost", port: 8080, user: "user", password: null)
+        "http://user:password@localhost:8080" || null     || null     || ""       || null         || new ProxySettings(host: "localhost", port: 8080, user: null, password: null)
+        "http://user:password@localhost:8080" || null     || ""       || null     || null         || new ProxySettings(host: "localhost", port: null, user: "user", password: "password")
+        "http://user:password@localhost:8080" || ""       || null     || null     || null         || null
     }
 }

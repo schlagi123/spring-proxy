@@ -6,7 +6,6 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
 
-import java.net.Authenticator;
 import java.util.Map;
 
 public class ProxyApplicationListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
@@ -36,19 +35,15 @@ public class ProxyApplicationListener implements ApplicationListener<Application
         ConfigurableEnvironment springEnvironment = event.getEnvironment();
         Map<String, Object> systemEnvironment = springEnvironment.getSystemEnvironment();
 
-        ProxySettings httpProxySettings = checkAndSetHttpProxy(springEnvironment, systemEnvironment);
-        ProxySettings httpsProxySettings = checkAndSetHttpsProxy(springEnvironment, systemEnvironment);
+        checkAndSetHttpProxy(springEnvironment, systemEnvironment);
+        checkAndSetHttpsProxy(springEnvironment, systemEnvironment);
 
-        if(httpProxySettings != null && httpsProxySettings != null){
-            Authenticator.setDefault(new ProxyAuthenticator());
-
-            checkAndSetNoProxy(springEnvironment, systemEnvironment);
-        }
+        checkAndSetNoProxy(springEnvironment, systemEnvironment);
 
         LOGGER.debug("PROXY LISTENER END");
     }
 
-    private ProxySettings checkAndSetHttpProxy(ConfigurableEnvironment environment, Map<String, Object> systemEnvironment) {
+    private void checkAndSetHttpProxy(ConfigurableEnvironment environment, Map<String, Object> systemEnvironment) {
         final ProxySettingsFactory proxySettingsFactory = new ProxySettingsFactory();
 
         final String osProperty = getOsEnvironmentVariable(systemEnvironment, OS_PROP_HTTP_PROXY);
@@ -76,10 +71,9 @@ public class ProxyApplicationListener implements ApplicationListener<Application
             }
         }
 
-        return proxySettings;
     }
 
-    private ProxySettings checkAndSetHttpsProxy(ConfigurableEnvironment environment, Map<String, Object> systemEnvironment) {
+    private void checkAndSetHttpsProxy(ConfigurableEnvironment environment, Map<String, Object> systemEnvironment) {
         final ProxySettingsFactory proxySettingsFactory = new ProxySettingsFactory();
 
         final String osProperty = getOsEnvironmentVariable(systemEnvironment, OS_PROP_HTTPS_PROXY);
@@ -107,7 +101,6 @@ public class ProxyApplicationListener implements ApplicationListener<Application
             }
         }
 
-        return proxySettings;
     }
 
     private void checkAndSetNoProxy(ConfigurableEnvironment environment, Map<String, Object> systemEnvironment) {
@@ -116,7 +109,7 @@ public class ProxyApplicationListener implements ApplicationListener<Application
         String osProperty = getOsEnvironmentVariable(systemEnvironment, OS_PROP_NO_PROXY);
         String javaProperty = environment.getProperty(JAVA_PROP_HTTP_NO_PROXY_HOSTS);
 
-        final String value = proxySettingsFactory.createNoProxyPropertyValue(osProperty, javaProperty);
+        final String value = proxySettingsFactory.createNoProxy(osProperty, javaProperty);
 
         if (value != null) {
             LOGGER.info("Setup no proxy");
