@@ -47,7 +47,11 @@ public class ProxyInformation {
     }
 
 
-    public String getNoProxyHosts() {
+    public boolean isNonProxyHostsSet() {
+        return System.getProperty(ProxyApplicationListener.JAVA_PROP_HTTP_NO_PROXY_HOSTS) != null;
+    }
+
+    public String getNonProxyHosts() {
         return System.getProperty(ProxyApplicationListener.JAVA_PROP_HTTP_NO_PROXY_HOSTS);
     }
 }

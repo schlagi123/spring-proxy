@@ -21,7 +21,7 @@ class ProxySettings {
     }
 
     public void setPort(Integer port) {
-        if (port != null && port < 0) {
+        if (port != null && port <= 0) {
             throw new IllegalArgumentException("Port Must Be Null Or A Positive Integer");
         }
         this.port = port;
