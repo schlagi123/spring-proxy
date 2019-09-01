@@ -30,7 +30,7 @@ class ProxySpringIntegrationTest extends Specification {
         )
 
         when:
-        def proxyInformation = context.getBean(ProxyInformation.class);
+        def proxyInformation = context.getBean(ProxyInformation.class)
 
         then:
         proxyInformation.isHttpProxySet()
@@ -58,7 +58,7 @@ class ProxySpringIntegrationTest extends Specification {
         def context = application.run("--server.port=0")
 
         when:
-        def proxyInformation = context.getBean(ProxyInformation.class);
+        def proxyInformation = context.getBean(ProxyInformation.class)
 
         then:
         !proxyInformation.isHttpProxySet()

@@ -17,11 +17,11 @@ class ProxySettingsFactory {
      * The value of the environmentVariable (url) is parsed into host, port, user and password.
      * If app-/system-properties are set, the values of the environment variable are overridden.
      *
-     * @param environmentVariable
-     * @param appPropertyHost
-     * @param appPropertyPort
-     * @param appPropertyUser
-     * @param appPropertyPassword
+     * @param environmentVariable value of the environment variable
+     * @param appPropertyHost     value of a host app-/system-property
+     * @param appPropertyPort     value of a port app-/system-property
+     * @param appPropertyUser     value of a user app-/system-property
+     * @param appPropertyPassword value of a password app-/system-property
      * @return The effective proxy settings.
      */
     public ProxySettings createProxySettings(final String environmentVariable,
@@ -141,7 +141,7 @@ class ProxySettingsFactory {
      * If nothing is set null will be returned.
      *
      * @param environmentVariable value of the environment variable
-     * @param appProperty value of the app property
+     * @param appProperty         value of the app property
      * @return return the effective value for the <code>http.nonProxyHosts</code>
      */
     public String createNonProxyHosts(String environmentVariable, String appProperty) {

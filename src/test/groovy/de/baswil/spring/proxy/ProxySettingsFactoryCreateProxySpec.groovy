@@ -80,7 +80,7 @@ class ProxySettingsFactoryCreateProxySpec extends Specification {
     }
 
     @Unroll
-    def "create proxy only from java Properties without hostname (prot: #javaPort, user: #javaUser, password: #javaPassword)"() {
+    def "create proxy only from java Properties without hostname (port: #javaPort, user: #javaUser, password: #javaPassword)"() {
         when:
         def currentResult = proxySettingsFactory.createProxySettings(
                 null,

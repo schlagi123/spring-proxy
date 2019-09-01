@@ -1,24 +1,24 @@
 package de.baswil.spring.proxy
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
-import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.ConfigurableEnvironment
 import spock.lang.Specification
 import spock.lang.Unroll
-import spock.util.environment.RestoreSystemProperties;
+import spock.util.environment.RestoreSystemProperties
 
 class ProxyApplicationListenerSpec extends Specification {
-    private ProxyApplicationListener applicationListener;
-    private ApplicationEnvironmentPreparedEvent applicationEvent;
-    private ConfigurableEnvironment environment;
-    private Map<String, Object> systemEnvironment;
+    private ProxyApplicationListener applicationListener
+    private ApplicationEnvironmentPreparedEvent applicationEvent
+    private ConfigurableEnvironment environment
+    private Map<String, Object> systemEnvironment
 
     void setup() {
         applicationListener = new ProxyApplicationListener()
 
         applicationEvent = Mock(ApplicationEnvironmentPreparedEvent)
 
-        environment = Mock(ConfigurableEnvironment);
-        applicationEvent.getEnvironment() >> environment;
+        environment = Mock(ConfigurableEnvironment)
+        applicationEvent.getEnvironment() >> environment
 
         systemEnvironment = new HashMap<>()
         environment.getSystemEnvironment() >> systemEnvironment
@@ -38,10 +38,10 @@ class ProxyApplicationListenerSpec extends Specification {
     @RestoreSystemProperties
     def "OS #variable is set (http_proxy)"() {
         setup:
-        setUpOsEnvironmentVariable(variable, "http://test:testPassword@localhost:8080");
+        setUpOsEnvironmentVariable(variable, "http://test:testPassword@localhost:8080")
 
         when:
-        applicationListener.onApplicationEvent(applicationEvent);
+        applicationListener.onApplicationEvent(applicationEvent)
 
         then:
         System.getProperty("http.proxyHost") == "localhost"
@@ -62,10 +62,10 @@ class ProxyApplicationListenerSpec extends Specification {
     @RestoreSystemProperties
     def "OS #variable is set (https_proxy)"() {
         setup:
-        setUpOsEnvironmentVariable(variable, "https://test:testPassword@localhost:8080");
+        setUpOsEnvironmentVariable(variable, "https://test:testPassword@localhost:8080")
 
         when:
-        applicationListener.onApplicationEvent(applicationEvent);
+        applicationListener.onApplicationEvent(applicationEvent)
 
         then:
         System.getProperty("http.proxyHost") == null
@@ -86,10 +86,10 @@ class ProxyApplicationListenerSpec extends Specification {
     @RestoreSystemProperties
     def "OS #variable is set (no_proxy)"() {
         setup:
-        setUpOsEnvironmentVariable(variable, "google.de");
+        setUpOsEnvironmentVariable(variable, "google.de")
 
         when:
-        applicationListener.onApplicationEvent(applicationEvent);
+        applicationListener.onApplicationEvent(applicationEvent)
 
         then:
         System.getProperty("http.proxyHost") == null
@@ -115,7 +115,7 @@ class ProxyApplicationListenerSpec extends Specification {
         setUpSpringEnvironmentProperty("http.proxyPassword","password")
 
         when:
-        applicationListener.onApplicationEvent(applicationEvent);
+        applicationListener.onApplicationEvent(applicationEvent)
 
         then:
         System.getProperty("http.proxyHost") == "localhost"
@@ -138,7 +138,7 @@ class ProxyApplicationListenerSpec extends Specification {
         setUpSpringEnvironmentProperty("https.proxyPassword","password")
 
         when:
-        applicationListener.onApplicationEvent(applicationEvent);
+        applicationListener.onApplicationEvent(applicationEvent)
 
         then:
         System.getProperty("http.proxyHost") == null
@@ -158,7 +158,7 @@ class ProxyApplicationListenerSpec extends Specification {
         setUpSpringEnvironmentProperty("http.nonProxyHosts","localhost|*.google.de")
 
         when:
-        applicationListener.onApplicationEvent(applicationEvent);
+        applicationListener.onApplicationEvent(applicationEvent)
 
         then:
         System.getProperty("http.proxyHost") == null
