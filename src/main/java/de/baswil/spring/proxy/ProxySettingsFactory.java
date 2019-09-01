@@ -4,23 +4,41 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.StringJoiner;
 
+/**
+ * Factory to analyse and get the effective settings of proxy hosts (with or without authentication)
+ * and non proxy hosts.
+ *
+ * @author Bastian Wilhelm
+ */
 class ProxySettingsFactory {
 
-    public ProxySettings createProxySettings(final String osProperty,
-                                             final String javaPropertyHost,
-                                             final String javaPropertyPort,
-                                             final String javaPropertyUser,
-                                             final String javaPropertyPassword) {
+    /**
+     * Analyse the settings of an environment variable and the corresponding app-/system-properties.
+     * The value of the environmentVariable (url) is parsed into host, port, user and password.
+     * If app-/system-properties are set, the values of the environment variable are overridden.
+     *
+     * @param environmentVariable
+     * @param appPropertyHost
+     * @param appPropertyPort
+     * @param appPropertyUser
+     * @param appPropertyPassword
+     * @return The effective proxy settings.
+     */
+    public ProxySettings createProxySettings(final String environmentVariable,
+                                             final String appPropertyHost,
+                                             final String appPropertyPort,
+                                             final String appPropertyUser,
+                                             final String appPropertyPassword) {
 
         final ProxySettings proxySettings;
-        if (osProperty != null) {
-            proxySettings = readProxySettingsFromUrl(osProperty);
+        if (environmentVariable != null) {
+            proxySettings = readProxySettingsFromUrl(environmentVariable);
         } else {
             proxySettings = new ProxySettings();
         }
 
         overrideProxySettingsWithJavaProperties(proxySettings,
-                javaPropertyHost, javaPropertyPort, javaPropertyUser, javaPropertyPassword);
+                appPropertyHost, appPropertyPort, appPropertyUser, appPropertyPassword);
 
         if (proxySettings.getHost() != null) {
             return proxySettings;
@@ -115,15 +133,26 @@ class ProxySettingsFactory {
         return proxySettings;
     }
 
-    public String createNoProxy(String osProperty, String javaProperty) {
-        if (javaProperty != null) {
-            if (javaProperty.trim().isEmpty()) {
+    /**
+     * Analyse the environment variable and the app property.
+     * If an app property is set (not null) this value is the return value.
+     * If no app property, but the environment variable is set,
+     * the environment variable will be converted in a format for the <code>http.nonProxyHosts</code>.
+     * If nothing is set null will be returned.
+     *
+     * @param environmentVariable value of the environment variable
+     * @param appProperty value of the app property
+     * @return return the effective value for the <code>http.nonProxyHosts</code>
+     */
+    public String createNonProxyHosts(String environmentVariable, String appProperty) {
+        if (appProperty != null) {
+            if (appProperty.trim().isEmpty()) {
                 return null;
             } else {
-                return javaProperty;
+                return appProperty;
             }
-        } else if (osProperty != null) {
-            String[] osPropertySplit = osProperty.split(",");
+        } else if (environmentVariable != null) {
+            String[] osPropertySplit = environmentVariable.split(",");
             StringJoiner stringJoiner = new StringJoiner("|");
 
             for (String osPropertyHost : osPropertySplit) {

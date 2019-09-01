@@ -2,6 +2,12 @@ package de.baswil.spring.proxy;
 
 import java.util.Objects;
 
+/**
+ * Represent the proxy settings for a http- or https-proxy.
+ * Hold the information of the host domain (or ip), the port, the user and the password.
+ *
+ * @author Bastian Wilhelm
+ */
 class ProxySettings {
     private String host;
     private Integer port;
@@ -20,6 +26,12 @@ class ProxySettings {
         return port;
     }
 
+    /**
+     * Set the port number.
+     *
+     * @param port port number.
+     * @throws IllegalArgumentException If the port number is not null and equals or less then zero.
+     */
     public void setPort(Integer port) {
         if (port != null && port <= 0) {
             throw new IllegalArgumentException("Port Must Be Null Or A Positive Integer");

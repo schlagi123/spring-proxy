@@ -12,7 +12,7 @@ class ProxySettingsFactoryCreateNoProxySpec extends Specification {
 
     def "create no proxy only without variables"() {
         when:
-        def currentResult = proxySettingsFactory.createNoProxy(null, null)
+        def currentResult = proxySettingsFactory.createNonProxyHosts(null, null)
 
         then:
         currentResult == null
@@ -21,7 +21,7 @@ class ProxySettingsFactoryCreateNoProxySpec extends Specification {
     @Unroll
     def "create no proxy only from OS environment variables (env. variable: #osProperty)"() {
         when:
-        def currentResult = proxySettingsFactory.createNoProxy(osProperty, null)
+        def currentResult = proxySettingsFactory.createNonProxyHosts(osProperty, null)
 
         then:
         currentResult == expectedResult
@@ -38,7 +38,7 @@ class ProxySettingsFactoryCreateNoProxySpec extends Specification {
     @Unroll
     def "create no proxy only from Java properties (nonProxyHosts: #javaProperty)"() {
         when:
-        def currentResult = proxySettingsFactory.createNoProxy(null, javaProperty)
+        def currentResult = proxySettingsFactory.createNonProxyHosts(null, javaProperty)
 
         then:
         currentResult == expectedResult
@@ -54,7 +54,7 @@ class ProxySettingsFactoryCreateNoProxySpec extends Specification {
     @Unroll
     def "overwrite no proxy OS environment variables (env. variable: #osProperty, nonProxyHosts: #javaProperty)"() {
         when:
-        def currentResult = proxySettingsFactory.createNoProxy(osProperty, javaProperty)
+        def currentResult = proxySettingsFactory.createNonProxyHosts(osProperty, javaProperty)
 
         then:
         currentResult == expectedResult
@@ -67,7 +67,7 @@ class ProxySettingsFactoryCreateNoProxySpec extends Specification {
 
     def "unset no proxy only OS environment variables with empty string"() {
         when:
-        def currentResult = proxySettingsFactory.createNoProxy("prop", "")
+        def currentResult = proxySettingsFactory.createNonProxyHosts("prop", "")
 
         then:
         currentResult == null

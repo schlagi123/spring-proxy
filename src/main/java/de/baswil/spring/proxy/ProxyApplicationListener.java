@@ -8,6 +8,30 @@ import org.springframework.core.env.ConfigurableEnvironment;
 
 import java.util.Map;
 
+/**
+ * <p>
+ * A SpringBoot ApplicationListener to read the environment variables
+ * <code>http_proxy</code>, <code>https_proxy</code>, <code>no_proxy</code>
+ * and the system/app properties
+ * <code>http.proxyHost</code>, <code>http.proxyPort</code>,
+ * <code>http.proxyUser</code>, <code>http.proxyPassword</code>,
+ * <code>https.proxyHost</code>, <code>https.proxyPort</code>,
+ * <code>https.proxyUser</code>, <code>https.proxyPassword</code>,
+ * <code>http.nonProxyHosts</code>
+ * </p>
+ * <p>
+ * The system/app properties override the environment variables.</br>
+ * At the end the system properties
+ * <code>http.proxyHost</code>, <code>http.proxyPort</code>,
+ * <code>http.proxyUser</code>, <code>http.proxyPassword</code>,
+ * <code>https.proxyHost</code>, <code>https.proxyPort</code>,
+ * <code>https.proxyUser</code>, <code>https.proxyPassword</code>,
+ * <code>http.nonProxyHosts</code>
+ * are set, if values are available in the environment variables or system/app properties.
+ * </p>
+ *
+ * @author Bastian Wilhelm
+ */
 public class ProxyApplicationListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ProxyApplicationListener.class);
@@ -109,7 +133,7 @@ public class ProxyApplicationListener implements ApplicationListener<Application
         String osProperty = getOsEnvironmentVariable(systemEnvironment, OS_PROP_NO_PROXY);
         String javaProperty = environment.getProperty(JAVA_PROP_HTTP_NO_PROXY_HOSTS);
 
-        final String value = proxySettingsFactory.createNoProxy(osProperty, javaProperty);
+        final String value = proxySettingsFactory.createNonProxyHosts(osProperty, javaProperty);
 
         if (value != null) {
             LOGGER.info("Setup no proxy");
@@ -119,20 +143,20 @@ public class ProxyApplicationListener implements ApplicationListener<Application
 
     private void setSystemProperty(String systemPropertyName, String systemPropertyValue, boolean password) {
         System.setProperty(systemPropertyName, systemPropertyValue);
-        if(password){
+        if (password) {
             LOGGER.trace("Set system property: {} = ******", systemPropertyName);
         } else {
             LOGGER.trace("Set system property: {} = {}", systemPropertyName, systemPropertyValue);
         }
     }
 
-    private String getOsEnvironmentVariable(Map<String, Object> systemEnvironment, String name){
+    private String getOsEnvironmentVariable(Map<String, Object> systemEnvironment, String name) {
         Object lowerCaseValue = systemEnvironment.get(name.toLowerCase());
         Object upperCaseValue = systemEnvironment.get(name.toUpperCase());
 
-        if(lowerCaseValue != null){
+        if (lowerCaseValue != null) {
             return lowerCaseValue.toString();
-        } else if(upperCaseValue != null) {
+        } else if (upperCaseValue != null) {
             return upperCaseValue.toString();
         } else {
             return null;
