@@ -20,7 +20,9 @@ import java.util.Map;
  * <code>http.nonProxyHosts</code>
  * </p>
  * <p>
- * The system/app properties override the environment variables.</br>
+ * The system/app properties override the environment variables.
+ * </p>
+ * <p>
  * At the end the system properties
  * <code>http.proxyHost</code>, <code>http.proxyPort</code>,
  * <code>http.proxyUser</code>, <code>http.proxyPassword</code>,
