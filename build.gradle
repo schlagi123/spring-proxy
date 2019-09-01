@@ -82,7 +82,7 @@ def pomConfig = {
     scm {
         connection "scm:git:git@github.com:schlagi123/spring-proxy.git"
 	    url "scm:git:git@github.com:schlagi123/spring-proxy.git"
-	    developerConnection = "scm:git:git@github.com:schlagi123/spring-proxy.git"
+	    developerConnection "scm:git:git@github.com:schlagi123/spring-proxy.git"
     }
 }
 
@@ -116,8 +116,6 @@ bintray {
     user = System.getProperty("bintry-username")
     key = System.getProperty("bintry-key")
     publications = ['mavenPublication']
-
-    def repository = "https://github.com/schlagi123/spring-proxy"
 
     pkg {
         repo = 'own-maven'
