@@ -2,10 +2,50 @@
 
 This small library gives you the possibility to handle proxy settings 
 and convert these to the default java proxy system properties.
-This is a benefit, because a lot of libraries use the default java proxy system properties (e. g. ApacheHttpClient)
-and this makes it easier to use proxies with libraries in the Spring universe.
+This is a benefit, because a lot of libraries use the default java proxy system properties 
+and this makes it easier to use proxies for libraries in the Spring universe.
+An example is the Feign Client from the Spring Cloud library that need no more settings for proxies, 
+if this library is used.  
 
-## Integration
+## Get Library
+
+The library is available over the jcenter maven repository. 
+You mast only setup the jcenter repository and use the dependency:
+
+### maven:
+```xml
+...
+<repositories>
+    <repository>
+        <id>jcenter</id>
+        <url>https://jcenter.bintray.com/</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>de.baswil.spring</groupId>
+        <artifactId>spring-proxy</artifactId>
+        <version>1.0</version>
+    </dependency>
+</dependencies>
+...
+```
+### gradle:
+
+```groovy
+...
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'de.baswil.spring:spring-proxy:1.0'
+}
+...
+``` 
+
+## Use the library
 
 The library implements an ApplicationListener for Spring application which handles all the system property and environment magic.
 With Spring boot you must only change your main class from:

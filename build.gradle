@@ -13,7 +13,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 test {
@@ -105,11 +105,6 @@ publishing {
             }
         }
     }
-//    repositories {
-//        maven {
-//            url = 'https://bintray.com/schlagi123/own-maven'
-//        }
-//    }
 }
 
 bintray {
