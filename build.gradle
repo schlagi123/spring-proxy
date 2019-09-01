@@ -67,7 +67,7 @@ def pomConfig = {
     licenses {
         license {
             name "MIT"
-            url "https://bitbucket.org/schlagi123/spring-http-s-proxy-settings"
+            url "https://opensource.org/licenses/MIT"
             distribution "repo"
         }
     }
@@ -75,12 +75,14 @@ def pomConfig = {
         developer {
             id "schlagi123"
             name "Bastian Wilhelm"
-            email "bw-dev@mailbox.org"
+            email "baswil@mailbox.org"
         }
     }
 
     scm {
-        url "https://bitbucket.org/schlagi123/spring-http-s-proxy-settings"
+        connection "scm:git:git@github.com:schlagi123/spring-proxy.git"
+	    url "scm:git:git@github.com:schlagi123/spring-proxy.git"
+	    developerConnection = "scm:git:git@github.com:schlagi123/spring-proxy.git"
     }
 }
 
@@ -98,17 +100,16 @@ publishing {
                 def root = asNode()
                 root.appendNode('description', 'A library with for handling proxy settings simpler in SpringBoot Projects')
                 root.appendNode('name', 'Spring Proxy')
-                root.appendNode('url', 'https://bitbucket.org/schlagi123/spring-http-s-proxy-settings')
+                root.appendNode('url', 'https://github.com/schlagi123/spring-proxy')
                 root.children().last() + pomConfig
             }
         }
     }
-    repositories {
-        maven {
-            url = 'https://bintray.com/schlagi123/own-maven'
-
-        }
-    }
+//    repositories {
+//        maven {
+//            url = 'https://bintray.com/schlagi123/own-maven'
+//        }
+//    }
 }
 
 bintray {
@@ -116,13 +117,15 @@ bintray {
     key = System.getProperty("bintry-key")
     publications = ['mavenPublication']
 
+    def repository = "https://github.com/schlagi123/spring-proxy"
+
     pkg {
         repo = 'own-maven'
         name = project.name
         licenses = ['MIT']
-        websiteUrl = 'https://bitbucket.org/schlagi123/spring-http-s-proxy-settings'
-        issueTrackerUrl = 'https://bitbucket.org/schlagi123/spring-http-s-proxy-settings/issues'
-        vcsUrl = 'https://bitbucket.org/schlagi123/spring-http-s-proxy-settings.git'
+        websiteUrl = 'https://github.com/schlagi123/spring-proxy'
+        issueTrackerUrl = 'https://github.com/schlagi123/spring-proxy/issues'
+        vcsUrl = 'https://github.com/schlagi123/spring-proxy.git'
         version {
             name = project.version
             released = new Date()
