@@ -75,7 +75,7 @@ def pomConfig = {
         developer {
             id "schlagi123"
             name "Bastian Wilhelm"
-            email "baswil@mailbox.org"
+            email "bw-dev@mailbox.org"
         }
     }
 
