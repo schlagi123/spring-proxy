@@ -1,0 +1,49 @@
+{
+  "properties": [
+    {
+      "name": "http.proxyHost",
+      "type": "java.lang.String",
+      "description": "Host of the http Proxy"
+    },
+    {
+      "name": "http.proxyPort",
+      "type": "java.lang.String",
+      "description": "Port of the http Proxy"
+    },
+    {
+      "name": "http.proxyUser",
+      "type": "java.lang.String",
+      "description": "Username of the http Proxy"
+    },
+    {
+      "name": "http.proxyPassword",
+      "type": "java.lang.String",
+      "description": "Password of the http Proxy"
+    },
+    {
+      "name": "https.proxyHost",
+      "type": "java.lang.String",
+      "description": "Host of the https Proxy"
+    },
+    {
+      "name": "https.proxyPort",
+      "type": "java.lang.String",
+      "description": "Port of the https Proxy"
+    },
+    {
+      "name": "https.proxyUser",
+      "type": "java.lang.String",
+      "description": "Username of the https Proxy"
+    },
+    {
+      "name": "https.proxyPassword",
+      "type": "java.lang.String",
+      "description": "Password of the https Proxy"
+    },
+    {
+      "name": "http.nonProxyHosts",
+      "type": "java.lang.String",
+      "description": "Hosts delimited by |, what will ignored for http and https Proxies"
+    }
+  ]
+}
