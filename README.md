@@ -26,7 +26,7 @@ You mast only setup the jcenter repository and use the dependency:
     <dependency>
         <groupId>de.baswil.spring</groupId>
         <artifactId>spring-proxy</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </dependency>
 </dependencies>
 ...
@@ -40,14 +40,14 @@ repositories {
 }
 
 dependencies {
-    compile 'de.baswil.spring:spring-proxy:1.0'
+    compile 'de.baswil.spring:spring-proxy:1.1'
 }
 ...
 ``` 
 
 ## Use the library
 
-The library implements an ApplicationListener for Spring application which handles all the system property and environment magic.
+The library implements an ApplicationListener for Spring applications which handles system property, spring properties and environment variables.
 With Spring boot you must only change your main class from:
 ```java
 package de.baswil.spring.proxy.examples;
@@ -156,7 +156,7 @@ public class UseNoProxySettings {
 }
 ```
 
-The ProxyInformation bean has methods for all proxy settings and forwards this method call this to the system properties.
+The ProxyInformation bean has methods for all proxy settings and forwards this method call to the system properties.
 
 ## Why an ApplicationListener?
 
