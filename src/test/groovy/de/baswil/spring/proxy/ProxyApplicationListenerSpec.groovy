@@ -1,5 +1,6 @@
 package de.baswil.spring.proxy
 
+import de.baswil.spring.proxy.noproxy.NoProxyFormatter
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
 import org.springframework.core.env.ConfigurableEnvironment
 import spock.lang.Specification
@@ -39,6 +40,7 @@ class ProxyApplicationListenerSpec extends Specification {
     def "OS #variable is set (http_proxy)"() {
         setup:
         setUpOsEnvironmentVariable(variable, "http://test:testPassword@localhost:8080")
+        environment.getProperty(ProxyApplicationListener.JAVA_PROP_HTTP_NO_PROXY_HOSTS_FORMAT, _ as Class, _) >> { it -> it[2]}
 
         when:
         applicationListener.onApplicationEvent(applicationEvent)
@@ -66,6 +68,7 @@ class ProxyApplicationListenerSpec extends Specification {
 
         when:
         applicationListener.onApplicationEvent(applicationEvent)
+        environment.getProperty(ProxyApplicationListener.JAVA_PROP_HTTP_NO_PROXY_HOSTS_FORMAT, _ as Class, _) >> { it -> it[2]}
 
         then:
         System.getProperty("http.proxyHost") == null
@@ -90,6 +93,7 @@ class ProxyApplicationListenerSpec extends Specification {
 
         when:
         applicationListener.onApplicationEvent(applicationEvent)
+        environment.getProperty(ProxyApplicationListener.JAVA_PROP_HTTP_NO_PROXY_HOSTS_FORMAT, _ as Class, _) >> { it -> it[2]}
 
         then:
         System.getProperty("http.proxyHost") == null
@@ -116,6 +120,7 @@ class ProxyApplicationListenerSpec extends Specification {
 
         when:
         applicationListener.onApplicationEvent(applicationEvent)
+        environment.getProperty(ProxyApplicationListener.JAVA_PROP_HTTP_NO_PROXY_HOSTS_FORMAT, _ as Class, _) >> { it -> it[2]}
 
         then:
         System.getProperty("http.proxyHost") == "localhost"
@@ -139,6 +144,7 @@ class ProxyApplicationListenerSpec extends Specification {
 
         when:
         applicationListener.onApplicationEvent(applicationEvent)
+        environment.getProperty(ProxyApplicationListener.JAVA_PROP_HTTP_NO_PROXY_HOSTS_FORMAT, _ as Class, _) >> { it -> it[2]}
 
         then:
         System.getProperty("http.proxyHost") == null
@@ -159,6 +165,7 @@ class ProxyApplicationListenerSpec extends Specification {
 
         when:
         applicationListener.onApplicationEvent(applicationEvent)
+        environment.getProperty(ProxyApplicationListener.JAVA_PROP_HTTP_NO_PROXY_HOSTS_FORMAT, _ as Class, _) >> { it -> it[2]}
 
         then:
         System.getProperty("http.proxyHost") == null

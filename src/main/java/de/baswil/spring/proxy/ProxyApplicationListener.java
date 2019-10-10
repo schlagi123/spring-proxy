@@ -1,5 +1,6 @@
 package de.baswil.spring.proxy;
 
+import de.baswil.spring.proxy.noproxy.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -52,6 +53,7 @@ public class ProxyApplicationListener implements ApplicationListener<Application
 
     private static final String OS_PROP_NO_PROXY = "no_proxy";
     static final String JAVA_PROP_HTTP_NO_PROXY_HOSTS = "http.nonProxyHosts";
+    static final String JAVA_PROP_HTTP_NO_PROXY_HOSTS_FORMAT = "http.nonProxyHosts.format";
 
 
     @Override
@@ -130,12 +132,22 @@ public class ProxyApplicationListener implements ApplicationListener<Application
     }
 
     private void checkAndSetNoProxy(ConfigurableEnvironment environment, Map<String, Object> systemEnvironment) {
-        ProxySettingsFactory proxySettingsFactory = new ProxySettingsFactory();
+        final ProxySettingsFactory proxySettingsFactory = new ProxySettingsFactory();
 
-        String osProperty = getOsEnvironmentVariable(systemEnvironment, OS_PROP_NO_PROXY);
-        String javaProperty = environment.getProperty(JAVA_PROP_HTTP_NO_PROXY_HOSTS);
+        final String osProperty = getOsEnvironmentVariable(systemEnvironment, OS_PROP_NO_PROXY);
+        final String javaProperty = environment.getProperty(JAVA_PROP_HTTP_NO_PROXY_HOSTS);
+        final NoProxyFormat noProxyFormat = environment.getProperty(JAVA_PROP_HTTP_NO_PROXY_HOSTS_FORMAT, NoProxyFormat.class, NoProxyFormat.JAVA);
 
-        final String value = proxySettingsFactory.createNonProxyHosts(osProperty, javaProperty);
+        final NoProxyFormatter noProxyFormatter;
+        if(noProxyFormat == NoProxyFormat.OS){
+            noProxyFormatter = new OSNoProxyFormatter();
+        } else if (noProxyFormat == NoProxyFormat.JAVA) {
+            noProxyFormatter = new NoChangeProxyFormatter();
+        } else {
+            noProxyFormatter = new OSIncludingAllSubDomainsNoProxyFormatter();
+        }
+
+        final String value = proxySettingsFactory.createNonProxyHosts(osProperty, javaProperty, noProxyFormatter);
 
         if (value != null) {
             LOGGER.info("Setup no proxy");

@@ -1,5 +1,6 @@
 package de.baswil.spring.proxy
 
+import de.baswil.spring.proxy.noproxy.NoChangeProxyFormatter
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -12,7 +13,7 @@ class ProxySettingsFactoryCreateNoProxySpec extends Specification {
 
     def "create no proxy only without variables"() {
         when:
-        def currentResult = proxySettingsFactory.createNonProxyHosts(null, null)
+        def currentResult = proxySettingsFactory.createNonProxyHosts(null, null, new NoChangeProxyFormatter())
 
         then:
         currentResult == null
@@ -21,7 +22,7 @@ class ProxySettingsFactoryCreateNoProxySpec extends Specification {
     @Unroll
     def "create no proxy only from OS environment variables (env. variable: #osProperty)"() {
         when:
-        def currentResult = proxySettingsFactory.createNonProxyHosts(osProperty, null)
+        def currentResult = proxySettingsFactory.createNonProxyHosts(osProperty, null, new NoChangeProxyFormatter())
 
         then:
         currentResult == expectedResult
@@ -38,7 +39,7 @@ class ProxySettingsFactoryCreateNoProxySpec extends Specification {
     @Unroll
     def "create no proxy only from Java properties (nonProxyHosts: #javaProperty)"() {
         when:
-        def currentResult = proxySettingsFactory.createNonProxyHosts(null, javaProperty)
+        def currentResult = proxySettingsFactory.createNonProxyHosts(null, javaProperty, new NoChangeProxyFormatter())
 
         then:
         currentResult == expectedResult
@@ -54,7 +55,7 @@ class ProxySettingsFactoryCreateNoProxySpec extends Specification {
     @Unroll
     def "overwrite no proxy OS environment variables (env. variable: #osProperty, nonProxyHosts: #javaProperty)"() {
         when:
-        def currentResult = proxySettingsFactory.createNonProxyHosts(osProperty, javaProperty)
+        def currentResult = proxySettingsFactory.createNonProxyHosts(osProperty, javaProperty, new NoChangeProxyFormatter())
 
         then:
         currentResult == expectedResult
@@ -67,7 +68,7 @@ class ProxySettingsFactoryCreateNoProxySpec extends Specification {
 
     def "unset no proxy only OS environment variables with empty string"() {
         when:
-        def currentResult = proxySettingsFactory.createNonProxyHosts("prop", "")
+        def currentResult = proxySettingsFactory.createNonProxyHosts("prop", "", new NoChangeProxyFormatter())
 
         then:
         currentResult == null
