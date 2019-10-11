@@ -132,22 +132,12 @@ public class ProxyApplicationListener implements ApplicationListener<Application
     }
 
     private void checkAndSetNoProxy(ConfigurableEnvironment environment, Map<String, Object> systemEnvironment) {
-        final ProxySettingsFactory proxySettingsFactory = new ProxySettingsFactory();
-
         final String osProperty = getOsEnvironmentVariable(systemEnvironment, OS_PROP_NO_PROXY);
         final String javaProperty = environment.getProperty(JAVA_PROP_HTTP_NO_PROXY_HOSTS);
-        final NoProxyFormat noProxyFormat = environment.getProperty(JAVA_PROP_HTTP_NO_PROXY_HOSTS_FORMAT, NoProxyFormat.class, NoProxyFormat.JAVA);
 
-        final NoProxyFormatter noProxyFormatter;
-        if(noProxyFormat == NoProxyFormat.OS){
-            noProxyFormatter = new OSNoProxyFormatter();
-        } else if (noProxyFormat == NoProxyFormat.JAVA) {
-            noProxyFormatter = new NoChangeProxyFormatter();
-        } else {
-            noProxyFormatter = new OSIncludingAllSubDomainsNoProxyFormatter();
-        }
-
-        final String value = proxySettingsFactory.createNonProxyHosts(osProperty, javaProperty, noProxyFormatter);
+        NoProxyFormatterFactory formatterFactory = new NoProxyFormatterFactory(environment);
+        NoProxyHostsConverter converter = new NoProxyHostsConverter(formatterFactory);
+        String value = converter.convert(osProperty, javaProperty);
 
         if (value != null) {
             LOGGER.info("Setup no proxy");

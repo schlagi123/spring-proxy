@@ -16,9 +16,9 @@ class OSProxyFormatterSpec extends Specification {
 
         where:
         host | expectedHost
-        "localhost" | "localhost"
-        ".localhost" | "*.localhost"
-        "*.localhost" | "*.localhost"
+        "localhost" | ["localhost"]
+        ".localhost" | ["*.localhost"]
+        "*.localhost" | ["*.localhost"]
     }
 
     def "delimiter" () {

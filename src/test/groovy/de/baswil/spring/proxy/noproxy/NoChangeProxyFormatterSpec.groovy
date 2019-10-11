@@ -15,6 +15,6 @@ class NoChangeProxyFormatterSpec extends Specification {
 
         then:
         formatter.hostDelimiter() == null
-        formattedNoProxy == noProxy
+        formattedNoProxy == [noProxy]
     }
 }

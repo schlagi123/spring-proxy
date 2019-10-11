@@ -1,7 +1,6 @@
 package de.baswil.spring.proxy
 
 import de.baswil.spring.proxy.noproxy.NoProxyFormat
-import de.baswil.spring.proxy.noproxy.NoProxyFormatter
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
 import org.springframework.core.env.ConfigurableEnvironment
 import spock.lang.Specification

@@ -1,12 +1,15 @@
 package de.baswil.spring.proxy.noproxy;
 
+import java.util.Collections;
+import java.util.List;
+
 public class OSNoProxyFormatter implements NoProxyFormatter {
     @Override
-    public String formatHostName(String hostname) {
+    public List<String> formatHostName(String hostname) {
         if (hostname.startsWith(".")) {
             hostname = "*" + hostname;
         }
-        return hostname;
+        return Collections.singletonList(hostname);
     }
 
     @Override

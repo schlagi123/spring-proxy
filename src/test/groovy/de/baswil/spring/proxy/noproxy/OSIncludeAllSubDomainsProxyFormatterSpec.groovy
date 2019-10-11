@@ -12,13 +12,13 @@ class OSIncludeAllSubDomainsProxyFormatterSpec extends Specification {
         def formattedNoProxy = formatter.formatHostName(host)
 
         then:
-        formattedNoProxy == expectedHost
+        formattedNoProxy == expectedHosts
 
         where:
-        host | expectedHost
-        "localhost" | "*.localhost"
-        ".localhost" | "*.localhost"
-        "*.localhost" | "*.localhost"
+        host | expectedHosts
+        "localhost" | ["localhost", "*.localhost"]
+        ".localhost" | ["*.localhost"]
+        "*.localhost" | ["*.localhost"]
     }
 
     def "delimiter" () {

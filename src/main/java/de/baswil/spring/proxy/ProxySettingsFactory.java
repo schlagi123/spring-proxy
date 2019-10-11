@@ -1,11 +1,7 @@
 package de.baswil.spring.proxy;
 
-import de.baswil.spring.proxy.noproxy.NoProxyFormatter;
-import de.baswil.spring.proxy.noproxy.OSNoProxyFormatter;
-
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.StringJoiner;
 
 /**
  * Factory to analyse and get the effective settings of proxy hosts (with or without authentication)
@@ -134,46 +130,5 @@ class ProxySettingsFactory {
         }
 
         return proxySettings;
-    }
-
-    /**
-     * Analyse the environment variable and the app property.
-     * If an app property is set (not null) this value is the return value.
-     * If no app property, but the environment variable is set,
-     * the environment variable will be converted in a format for the <code>http.nonProxyHosts</code>.
-     * If nothing is set null will be returned.
-     *
-     * @param environmentVariable      value of the environment variable.
-     * @param appProperty              value of the app property.
-     * @param appPropertyNoProxyFormat NoProxyFormatter for the app Property.
-     * @return return the effective value for the <code>http.nonProxyHosts</code>
-     */
-    public String createNonProxyHosts(String environmentVariable, String appProperty, NoProxyFormatter appPropertyNoProxyFormat) {
-        if (appProperty != null) {
-            if (appProperty.trim().isEmpty()) {
-                return null;
-            } else {
-                return formatNoProxyHosts(appProperty, appPropertyNoProxyFormat);
-            }
-        } else if (environmentVariable != null) {
-            return formatNoProxyHosts(environmentVariable, new OSNoProxyFormatter());
-        } else {
-            return null;
-        }
-    }
-
-    private String formatNoProxyHosts(String value, NoProxyFormatter noProxyFormatter) {
-        final StringJoiner stringJoiner = new StringJoiner("|");
-        final String hostDelimiter = noProxyFormatter.hostDelimiter();
-        if (hostDelimiter == null) {
-            return noProxyFormatter.formatHostName(value);
-        } else {
-            final String[] hostNames = value.split(hostDelimiter);
-            for (String hostName : hostNames) {
-                final String formattedHostName = noProxyFormatter.formatHostName(hostName);
-                stringJoiner.add(formattedHostName);
-            }
-            return stringJoiner.toString();
-        }
     }
 }

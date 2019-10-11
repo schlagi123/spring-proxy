@@ -2,6 +2,7 @@ package de.baswil.spring.proxy.integration
 
 import de.baswil.spring.proxy.ProxyApplicationListener
 import de.baswil.spring.proxy.ProxyInformation
+import de.baswil.spring.proxy.noproxy.NoProxyFormatter
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.web.servlet.config.annotation.EnableWebMvc
@@ -80,5 +81,55 @@ class ProxySpringIntegrationTest extends Specification {
 
         cleanup:
         context.close()
+    }
+
+    @RestoreSystemProperties
+    def "run spring with custom noProxyFormatter"() {
+        setup:
+        def application = new SpringApplication(ProxySpringIntegrationTest.class)
+        application.addListeners(new ProxyApplicationListener())
+        def context = application.run(
+                "--server.port=0",
+                "--http.proxyHost=localhosthttp",
+                "--http.proxyPort=80",
+                "--http.proxyUser=user",
+                "--http.proxyPassword=password",
+                "--http.nonProxyHosts=host1;host2",
+                "--http.nonProxyHosts.format=OTHER",
+                "--http.nonProxyHosts.formatter=" + CustomFormatter.class.getName()
+        )
+
+        when:
+        def proxyInformation = context.getBean(ProxyInformation.class)
+
+        then:
+        proxyInformation.isHttpProxySet()
+        proxyInformation.getHttpHost() == "localhosthttp"
+        proxyInformation.getHttpPort() == "80"
+        proxyInformation.getHttpUser() == "user"
+        proxyInformation.getHttpPassword() == "password"
+        !proxyInformation.isHttpsProxySet()
+        proxyInformation.getHttpsHost() == null
+        proxyInformation.getHttpsPort() == null
+        proxyInformation.getHttpsUser() == null
+        proxyInformation.getHttpsPassword() == null
+        proxyInformation.isNonProxyHostsSet()
+        proxyInformation.getNonProxyHosts() == "host1|1tsoh|host2|2tsoh"
+
+        cleanup:
+        context.close()
+    }
+
+    static class CustomFormatter implements NoProxyFormatter {
+
+        @Override
+        List<String> formatHostName(String hostname) {
+            return Arrays.asList(hostname, hostname.reverse())
+        }
+
+        @Override
+        String hostDelimiter() {
+            return ";"
+        }
     }
 }
