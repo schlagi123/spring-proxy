@@ -31,6 +31,9 @@ ext {
 dependencies {
     compile "org.springframework.boot:spring-boot-starter:$springBootVersion"
 
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
+
     testCompile "junit:junit:4.12"
     testCompile "org.codehaus.groovy:groovy-all:2.5.8"
     testCompile "org.spockframework:spock-core:1.3-groovy-2.5"
