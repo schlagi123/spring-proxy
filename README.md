@@ -26,7 +26,7 @@ You mast only setup the jcenter repository and use the dependency:
     <dependency>
         <groupId>de.baswil.spring</groupId>
         <artifactId>spring-proxy</artifactId>
-        <version>1.1</version>
+        <version>1.2</version>
     </dependency>
 </dependencies>
 ...
@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-    compile 'de.baswil.spring:spring-proxy:1.1'
+    compile 'de.baswil.spring:spring-proxy:1.2'
 }
 ...
 ``` 
@@ -131,6 +131,27 @@ because it has not the same format as the java `http.nonProxyHosts` system prope
 Moreover there are some operation systems / tools that do not use a astrix (`*`) `no_proxy` to include all sub domains
 (e. g. `.google.de` includes all sub domains of google.de because of the leading dot). 
 The `http.nonProxyHosts` property do not support this so the listener added the astrix in front of the dot.
+
+### custom format for `http.nonProxyHosts` application property
+
+Sometimes the property `http.nonProxyHosts` contains a custom format. 
+In such situations there are two properties for customize the parsing of the no proxy property:
+ - `proxy-format.app-http-no-proxy.format`
+ - `proxy-format.app-http-no-proxy.formatter`
+ 
+`proxy-format.app-http-no-proxy.format` defines the format. The values `OS`, `JAVA` and `OTHER` are possible.
+The default is `JAVA` and do not change the value of the no proxy hosts. 
+`OS` stands for the format of a normal environment variable (comma as delimiter).
+With `OTHER` you can define a custom formatter with the `proxy-format.app-http-no-proxy.formatter` property.
+This library contains some implementations:
+ - `de.baswil.spring.proxy.noproxy.NoChangeProxyFormatter`  
+ Same as setting `proxy-format.app-http-no-proxy.format` to `JAVA`  
+ - `de.baswil.spring.proxy.noproxy.OSNoProxyFormatter`  
+ Same as setting `proxy-format.app-http-no-proxy.format` to `OS`  
+ - `de.baswil.spring.proxy.noproxy.OSIncludingAllSubDomainsNoProxyFormatter`  
+ Extends the formatter `de.baswil.spring.proxy.noproxy.OSNoProxyFormatter` and include all sub domains of domains
+
+All other formats are possible if you implement the `de.baswil.spring.proxy.noproxy.NoProxyFormatter` interface.
 
 ## Unset Environment Variables
 
