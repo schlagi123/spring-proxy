@@ -16,14 +16,6 @@ repositories {
     jcenter()
 }
 
-test {
-    //we want display the following test events
-    testLogging {
-        // set options for log level LIFECYCLE
-        events "failed", "started", "skipped", "failed"
-    }
-}
-
 ext {
     springBootVersion = "2.1.7.RELEASE"
 }
