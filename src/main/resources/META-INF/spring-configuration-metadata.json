@@ -44,6 +44,17 @@
       "name": "http.nonProxyHosts",
       "type": "java.lang.String",
       "description": "Hosts delimited by |, what will ignored for http and https Proxies"
+    },
+    {
+      "name": "proxy-format.app-http-no-proxy.format",
+      "type": "de.baswil.spring.proxy.noproxy.NoProxyFormat",
+      "defaultValue": "de.baswil.spring.proxy.noproxy.NoProxyFormat.JAVA",
+      "description": "Setup the format of the no proxy application attribute. The values OS, JAVA and OTHER are possible. If OTHER is set the property proxy-format.app-http-no-proxy.formatter must be set."
+    },
+    {
+      "name": "proxy-format.app-http-no-proxy.formatter",
+      "type": "java.lang.Class<? extends de.baswil.spring.proxy.noproxy.NoProxyFormatter>",
+      "description": "Class of a custom formatter, that should be used if proxy-format.app-http-no-proxy.format is set to OTHER."
     }
   ]
 }
