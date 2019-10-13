@@ -13,8 +13,6 @@ import spock.util.environment.RestoreSystemProperties
 
 @SpringBootApplication
 @EnableWebMvc
-@Ignore
-// ToDo: Später verbessern
 class ProxySpringIntegrationTest extends Specification {
 
     @RestoreSystemProperties

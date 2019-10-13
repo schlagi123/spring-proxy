@@ -29,10 +29,10 @@ public class Constants {
     public static final String JAVA_HTTP_PROXY_USER_PROP = "http.proxyUser";
     public static final String JAVA_HTTP_PROXY_PASSWORD_PROP = "http.proxyPassword";
 
-    public static final String JAVA_HTTPS_PROXY_HOST_PROP = "http.proxyHost";
-    public static final String JAVA_HTTPS_PROXY_PORT_PROP = "http.proxyPort";
-    public static final String JAVA_HTTPS_PROXY_USER_PROP = "http.proxyUser";
-    public static final String JAVA_HTTPS_PROXY_PASSWORD_PROP = "http.proxyPassword";
+    public static final String JAVA_HTTPS_PROXY_HOST_PROP = "https.proxyHost";
+    public static final String JAVA_HTTPS_PROXY_PORT_PROP = "https.proxyPort";
+    public static final String JAVA_HTTPS_PROXY_USER_PROP = "https.proxyUser";
+    public static final String JAVA_HTTPS_PROXY_PASSWORD_PROP = "https.proxyPassword";
 
     public static final String JAVA_NON_PROXY_HOSTS_PROP = "http.nonProxyHosts";
 
