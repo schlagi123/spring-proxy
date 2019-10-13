@@ -95,8 +95,8 @@ class ProxySpringIntegrationTest extends Specification {
                 "--http.proxyUser=user",
                 "--http.proxyPassword=password",
                 "--http.nonProxyHosts=host1;host2",
-                "--http.nonProxyHosts.format=OTHER",
-                "--http.nonProxyHosts.formatter=" + CustomFormatter.class.getName()
+                "--proxy-format.app-http-no-proxy.format=OTHER",
+                "--proxy-format.app-http-no-proxy.formatter=" + CustomFormatter.class.getName()
         )
 
         when:

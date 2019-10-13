@@ -1,18 +1,15 @@
 package de.baswil.spring.proxy.noproxy;
 
-import org.springframework.core.env.Environment;
+import de.baswil.spring.proxy.configuration.Configurations;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class NoProxyFormatterFactory {
-    public static final String FORMAT_PROPERTY_NAME = "http.nonProxyHosts.format";
-    public static final String FORMATTER_PROPERTY_NAME = "http.nonProxyHosts.formatter";
+    private final Configurations configurations;
 
-    private final Environment environment;
-
-    public NoProxyFormatterFactory(Environment environment) {
-        this.environment = environment;
+    public NoProxyFormatterFactory(Configurations configurations) {
+        this.configurations = configurations;
     }
 
     public NoProxyFormatter createNoProxyFormatterForOSProperty() {
@@ -20,31 +17,24 @@ public class NoProxyFormatterFactory {
     }
 
     public NoProxyFormatter createNoProxyFormatterFromProperties() {
-        final NoProxyFormat format = environment.getProperty(FORMAT_PROPERTY_NAME, NoProxyFormat.class, NoProxyFormat.JAVA);
+        final NoProxyFormat format = configurations.getAppNonProxyHostsFormat();
 
-        if(format == NoProxyFormat.OS) {
+        if (format == NoProxyFormat.OS) {
             return createNoProxyFormatterForOSProperty();
-        } else if(format == NoProxyFormat.JAVA) {
+        } else if (format == NoProxyFormat.JAVA || format == null) {
             return new NoChangeProxyFormatter();
-        } else if (format == NoProxyFormat.OTHER){
-            final String otherNoProxyFormatter = environment.getProperty(FORMATTER_PROPERTY_NAME, String.class);
-            if(otherNoProxyFormatter == null){
-                throw new NoProxyFormatterInitializationException();
-            }
-
+        } else {
+            // NoProxyFormat.OTHER
             try {
-                final Class<?> aClass = Class.forName(otherNoProxyFormatter);
-                if(!NoProxyFormatter.class.isAssignableFrom(aClass)) {
-                    throw new NoProxyFormatterInitializationException();
+                Class<? extends NoProxyFormatter> formatterClass = configurations.getAppNonProxyHostsFormatter();
+                if(formatterClass == null) {
+                    throw new NoProxyFormatterInitializationException("If NoProxyFormat.OTHER is used a no proxy Formatter must be used.");
                 }
-                final Class<? extends NoProxyFormatter> formatClass = aClass.asSubclass(NoProxyFormatter.class);
-                final Constructor<? extends NoProxyFormatter> defaultConstructor = formatClass.getConstructor();
+                final Constructor<? extends NoProxyFormatter> defaultConstructor = formatterClass.getConstructor();
                 return defaultConstructor.newInstance();
-            } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
                 throw new NoProxyFormatterInitializationException(e);
             }
-        } else {
-            throw new NoProxyFormatterInitializationException();
         }
     }
 }

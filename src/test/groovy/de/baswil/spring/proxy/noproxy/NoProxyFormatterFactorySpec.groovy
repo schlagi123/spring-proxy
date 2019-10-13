@@ -1,18 +1,13 @@
 package de.baswil.spring.proxy.noproxy
 
-import org.springframework.core.env.Environment
+import de.baswil.spring.proxy.configuration.Configurations
 import spock.lang.Specification
 
 class NoProxyFormatterFactorySpec extends Specification {
-    Environment environment = Mock Environment
-    NoProxyFormatterFactory factory = new NoProxyFormatterFactory(environment)
+    Configurations configurations = Mock Configurations
+    NoProxyFormatterFactory factory = new NoProxyFormatterFactory(configurations)
 
     def "default without setting format and formatter"() {
-        setup:
-        environment.getProperty(NoProxyFormatterFactory.FORMAT_PROPERTY_NAME, NoProxyFormat.class, _ as NoProxyFormat) >> {
-            it[2]
-        }
-
         when:
         def formatter = factory.createNoProxyFormatterFromProperties()
 
@@ -22,7 +17,7 @@ class NoProxyFormatterFactorySpec extends Specification {
 
     def "with JAVA format"() {
         setup:
-        environment.getProperty(NoProxyFormatterFactory.FORMAT_PROPERTY_NAME, NoProxyFormat.class, _ as NoProxyFormat) >> NoProxyFormat.JAVA
+        configurations.getAppNonProxyHostsFormat() >> NoProxyFormat.JAVA
 
         when:
         def formatter = factory.createNoProxyFormatterFromProperties()
@@ -33,7 +28,7 @@ class NoProxyFormatterFactorySpec extends Specification {
 
     def "with OS format"() {
         setup:
-        environment.getProperty(NoProxyFormatterFactory.FORMAT_PROPERTY_NAME, NoProxyFormat.class, _ as NoProxyFormat) >> NoProxyFormat.OS
+        configurations.getAppNonProxyHostsFormat() >> NoProxyFormat.OS
 
         when:
         def formatter = factory.createNoProxyFormatterFromProperties()
@@ -52,32 +47,8 @@ class NoProxyFormatterFactorySpec extends Specification {
 
     def "with OTHER format and without formatter"() {
         setup:
-        environment.getProperty(NoProxyFormatterFactory.FORMAT_PROPERTY_NAME, NoProxyFormat.class, _ as NoProxyFormat) >> NoProxyFormat.OTHER
-        environment.getProperty(NoProxyFormatterFactory.FORMATTER_PROPERTY_NAME, String.class) >> null
-
-        when:
-        factory.createNoProxyFormatterFromProperties()
-
-        then:
-        thrown NoProxyFormatterInitializationException
-    }
-
-    def "with OTHER format and with not existing formatter"() {
-        setup:
-        environment.getProperty(NoProxyFormatterFactory.FORMAT_PROPERTY_NAME, NoProxyFormat.class, _ as NoProxyFormat) >> NoProxyFormat.OTHER
-        environment.getProperty(NoProxyFormatterFactory.FORMATTER_PROPERTY_NAME, String.class) >> "helloworld"
-
-        when:
-        factory.createNoProxyFormatterFromProperties()
-
-        then:
-        thrown NoProxyFormatterInitializationException
-    }
-
-    def "with OTHER format and with formatter without implementing interface"() {
-        setup:
-        environment.getProperty(NoProxyFormatterFactory.FORMAT_PROPERTY_NAME, NoProxyFormat.class, _ as NoProxyFormat) >> NoProxyFormat.OTHER
-        environment.getProperty(NoProxyFormatterFactory.FORMATTER_PROPERTY_NAME, String.class) >> "java.lang.String"
+        configurations.getAppNonProxyHostsFormat() >> NoProxyFormat.OTHER
+        configurations.getAppNonProxyHostsFormatter() >> null
 
         when:
         factory.createNoProxyFormatterFromProperties()
@@ -88,8 +59,8 @@ class NoProxyFormatterFactorySpec extends Specification {
 
     def "with OTHER format and with formatter without default constructor"() {
         setup:
-        environment.getProperty(NoProxyFormatterFactory.FORMAT_PROPERTY_NAME, NoProxyFormat.class, _ as NoProxyFormat) >> NoProxyFormat.OTHER
-        environment.getProperty(NoProxyFormatterFactory.FORMATTER_PROPERTY_NAME, String.class) >> WithoutDefaultConstructor.class.getName()
+        configurations.getAppNonProxyHostsFormat() >> NoProxyFormat.OTHER
+        configurations.getAppNonProxyHostsFormatter() >> WithoutDefaultConstructor.class.getName()
 
         when:
         factory.createNoProxyFormatterFromProperties()
@@ -115,8 +86,8 @@ class NoProxyFormatterFactorySpec extends Specification {
 
     def "with OTHER format and with formatter with exception in default constructor"() {
         setup:
-        environment.getProperty(NoProxyFormatterFactory.FORMAT_PROPERTY_NAME, NoProxyFormat.class, _ as NoProxyFormat) >> NoProxyFormat.OTHER
-        environment.getProperty(NoProxyFormatterFactory.FORMATTER_PROPERTY_NAME, String.class) >> WithExceptionDefaultConstructor.class.getName()
+        configurations.getAppNonProxyHostsFormat() >> NoProxyFormat.OTHER
+        configurations.getAppNonProxyHostsFormatter() >> WithExceptionDefaultConstructor.class.getName()
 
         when:
         factory.createNoProxyFormatterFromProperties()
@@ -143,8 +114,8 @@ class NoProxyFormatterFactorySpec extends Specification {
 
     def "with OTHER format with formatter"() {
         setup:
-        environment.getProperty(NoProxyFormatterFactory.FORMAT_PROPERTY_NAME, NoProxyFormat.class, _ as NoProxyFormat) >> NoProxyFormat.OTHER
-        environment.getProperty(NoProxyFormatterFactory.FORMATTER_PROPERTY_NAME, String.class) >> RightFormatter.class.getName()
+        configurations.getAppNonProxyHostsFormat() >> NoProxyFormat.OTHER
+        configurations.getAppNonProxyHostsFormatter() >> RightFormatter.class.getName()
 
         when:
         def formatter = factory.createNoProxyFormatterFromProperties()
