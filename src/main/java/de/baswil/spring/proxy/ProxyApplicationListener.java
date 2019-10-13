@@ -43,7 +43,7 @@ import org.springframework.context.ApplicationListener;
  */
 public class ProxyApplicationListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(ProxyApplicationListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProxyApplicationListener.class);
 
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
