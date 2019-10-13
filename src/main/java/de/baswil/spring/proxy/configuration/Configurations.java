@@ -6,6 +6,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Contains all configurations for the library.
+ *
+ * @author Bastian Wilhelm
+ */
 @Getter
 @Setter
 @ToString

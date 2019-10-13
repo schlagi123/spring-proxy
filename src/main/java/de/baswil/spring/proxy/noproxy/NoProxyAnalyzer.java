@@ -5,6 +5,11 @@ import de.baswil.spring.proxy.configuration.Configurations;
 import java.util.List;
 import java.util.StringJoiner;
 
+/**
+ * Analyze environment variable and application property non proxy hosts.
+ *
+ * @author Bastian Wilhelm
+ */
 public class NoProxyAnalyzer {
     private final Configurations configurations;
     private final NoProxyFormatterFactory noProxyFormatterFactory;
@@ -15,12 +20,17 @@ public class NoProxyAnalyzer {
         this.noProxyFormatterFactory = noProxyFormatterFactory;
     }
 
+    /**
+     * Analyze and format non proxy hosts.
+     *
+     * @return result of analyze.
+     */
     public String analyze() {
         String osPropertyValue = configurations.getOsNoProxy();
         String javaPropertyValue = configurations.getAppNonProxyHosts();
 
-        if(javaPropertyValue != null){
-            if(javaPropertyValue.trim().isEmpty()){
+        if (javaPropertyValue != null) {
+            if (javaPropertyValue.trim().isEmpty()) {
                 return null;
             } else {
                 NoProxyFormatter formatter = noProxyFormatterFactory.createNoProxyFormatterFromProperties();
@@ -34,10 +44,10 @@ public class NoProxyAnalyzer {
         }
     }
 
-    private String convertProperty(String value, NoProxyFormatter formatter){
+    private String convertProperty(String value, NoProxyFormatter formatter) {
         StringJoiner stringJoiner = new StringJoiner("|");
         String delimiter = formatter.hostDelimiter();
-        if(delimiter == null){
+        if (delimiter == null) {
             List<String> convertedHosts = formatter.formatHostName(value);
             convertedHosts.forEach(stringJoiner::add);
             return stringJoiner.toString();

@@ -6,13 +6,28 @@ import org.springframework.core.env.ConfigurableEnvironment;
 
 import java.util.Map;
 
+/**
+ * Read the environment variables and application properties and save the values in a {@link Configurations} object.
+ *
+ * @author Bastian Wilhelm
+ */
 public class ConfigurationsReader {
     private final ConfigurableEnvironment environment;
 
+    /**
+     * Create a Object
+     *
+     * @param environment The environment of the sping application.
+     */
     public ConfigurationsReader(ConfigurableEnvironment environment) {
         this.environment = environment;
     }
 
+    /**
+     * Read all needed environment variables and application properties and save the values in a {@link Configurations} object.
+     *
+     * @return all configurations for the library.
+     */
     public Configurations readConfigurations() {
         Configurations configurations = new Configurations();
 
@@ -53,7 +68,7 @@ public class ConfigurationsReader {
         if (appHttpNonProxyHostsFormatterName != null) {
             try {
                 Class<?> aClass = Class.forName(appHttpNonProxyHostsFormatterName);
-                if(!NoProxyFormatter.class.isAssignableFrom(aClass)) {
+                if (!NoProxyFormatter.class.isAssignableFrom(aClass)) {
                     throw new ConfigurationsException("Class " + aClass.getName() + " not implement " + NoProxyFormatter.class.getName());
                 }
                 final Class<? extends NoProxyFormatter> formatClass = aClass.asSubclass(NoProxyFormatter.class);
@@ -125,7 +140,7 @@ public class ConfigurationsReader {
         Object upperCaseValue = systemEnvironment.get(variableName.toLowerCase());
         Object lowerCaseValue = systemEnvironment.get(variableName.toUpperCase());
 
-        if(upperCaseValue != null){
+        if (upperCaseValue != null) {
             return upperCaseValue.toString();
         } else if (lowerCaseValue != null) {
             return lowerCaseValue.toString();

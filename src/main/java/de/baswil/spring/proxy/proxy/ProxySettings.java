@@ -3,6 +3,11 @@ package de.baswil.spring.proxy.proxy;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Contains settings for a default proxy (http or https)
+ *
+ * @author Bastian Wilhelm
+ */
 @Getter
 @Setter
 public class ProxySettings {

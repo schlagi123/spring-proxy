@@ -3,17 +3,47 @@ package de.baswil.spring.proxy.proxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Analyze the Application properties for proxies (http or https)
+ *
+ * @author Bastian Wilhelm
+ */
 public abstract class AbstractPropertyProxySettingsParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPropertyProxySettingsParser.class);
 
+    /**
+     * Get the host value of the application properties.
+     *
+     * @return host
+     */
     public abstract String getHost();
 
+    /**
+     * Get the port value of the application properties.
+     *
+     * @return port
+     */
     public abstract String getPort();
 
+    /**
+     * Get the user value of the application properties.
+     *
+     * @return user
+     */
     public abstract String getUser();
 
+    /**
+     * Get the password value of the application properties.
+     *
+     * @return password
+     */
     public abstract String getPassword();
 
+    /**
+     * Analyze the url of the application variables and save the result in the {@link ProxySettings} object.
+     *
+     * @param proxySettings The settings object for the result of the analyze.
+     */
     public void readProxySettingsFromProperties(ProxySettings proxySettings) {
         String host = getHost();
         String port = getPort();

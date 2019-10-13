@@ -6,11 +6,26 @@ import org.slf4j.LoggerFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * Analyze the Environment variable for proxies (http or https)
+ *
+ * @author Bastian Wilhelm
+ */
 public abstract class AbstractUrlProxySettingsParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractUrlProxySettingsParser.class);
 
+    /**
+     * Get the value (url) of the environment variable.
+     *
+     * @return url
+     */
     public abstract String getUrl();
 
+    /**
+     * Analyze the url of the environment variable and save the result in the {@link ProxySettings} object.
+     *
+     * @param proxySettings The settings object for the result of the analyze.
+     */
     public void readProxySettingsFromUrl(ProxySettings proxySettings) {
         String urlString = getUrl();
         if(urlString == null){

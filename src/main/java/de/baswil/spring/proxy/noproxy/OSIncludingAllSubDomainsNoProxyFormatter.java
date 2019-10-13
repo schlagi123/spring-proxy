@@ -4,6 +4,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Formatter a operation system environment variable and include also all sub domains.
+ *
+ * @author Bastian Wilhelm
+ */
 public class OSIncludingAllSubDomainsNoProxyFormatter implements NoProxyFormatter {
     @Override
     public List<String> formatHostName(String hostname) {
