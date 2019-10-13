@@ -50,9 +50,7 @@ public class ConfigurationsReader {
 
     private void setAppNonProxyHostsFormatter(Configurations configurations) {
         String appHttpNonProxyHostsFormatterName = environment.getProperty(Constants.APP_NON_PROXY_HOSTS_FORMATTER_PROP, String.class);
-        if(appHttpNonProxyHostsFormatterName == null){
-            configurations.setAppNonProxyHostsFormatter(null);
-        } else {
+        if (appHttpNonProxyHostsFormatterName != null) {
             try {
                 Class<?> aClass = Class.forName(appHttpNonProxyHostsFormatterName);
                 if(!NoProxyFormatter.class.isAssignableFrom(aClass)) {

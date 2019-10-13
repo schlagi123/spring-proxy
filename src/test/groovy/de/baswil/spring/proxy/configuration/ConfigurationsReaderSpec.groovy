@@ -1,6 +1,7 @@
 package de.baswil.spring.proxy.configuration
 
 import de.baswil.spring.proxy.noproxy.NoProxyFormat
+import de.baswil.spring.proxy.noproxy.NoProxyFormatter
 import org.springframework.core.env.ConfigurableEnvironment
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -42,7 +43,7 @@ class ConfigurationsReaderSpec extends Specification {
     }
 
     @Unroll
-    def "App #propertyKey Property set"() {
+    def "App #propertyKey property set"() {
         when:
         environment.getProperty(propertyKey, String.class) >> propertyValue
         def configurations = configurationsReader.readConfigurations()
@@ -82,5 +83,58 @@ class ConfigurationsReaderSpec extends Specification {
         Constants.OS_NO_PROXY_PROP.toUpperCase()    | "osNoProxy"                | "host1,*.host2"
     }
 
-    // ToDo: test for formatting properties
+    @Unroll
+    def "App appNonProxyHostsFormat property with value '#value'"() {
+        when:
+        environment.getProperty(Constants.APP_NON_PROXY_HOSTS_FORMAT_PROP.toLowerCase(), NoProxyFormat.class, _ as NoProxyFormat) >> value
+        def configurations = configurationsReader.readConfigurations()
+
+        then:
+        configurations.appNonProxyHostsFormat == value
+
+        where:
+        value               | _
+        NoProxyFormat.OS    | _
+        NoProxyFormat.JAVA  | _
+        NoProxyFormat.OTHER | _
+    }
+
+    def "App appNonProxyHostsFormatter property"() {
+        when:
+        environment.getProperty(Constants.APP_NON_PROXY_HOSTS_FORMATTER_PROP.toLowerCase(), String.class) >> NormalFormatter.class.getName()
+        def configurations = configurationsReader.readConfigurations()
+
+        then:
+        configurations.appNonProxyHostsFormatter == NormalFormatter.class
+    }
+
+    static class NormalFormatter implements NoProxyFormatter {
+        @Override
+        List<String> formatHostName(String hostname) {
+            return null
+        }
+
+        @Override
+        String hostDelimiter() {
+            return null
+        }
+    }
+
+    def "App appNonProxyHostsFormatter property with not existing class"() {
+        when:
+        environment.getProperty(Constants.APP_NON_PROXY_HOSTS_FORMATTER_PROP.toLowerCase(), String.class) >> "lalalalalalalalala"
+        configurationsReader.readConfigurations()
+
+        then:
+        thrown ConfigurationsException
+    }
+
+    def "App appNonProxyHostsFormatter property with class with wrong type"() {
+        when:
+        environment.getProperty(Constants.APP_NON_PROXY_HOSTS_FORMATTER_PROP.toLowerCase(), String.class) >> "java.lang.String"
+        configurationsReader.readConfigurations()
+
+        then:
+        thrown ConfigurationsException
+    }
 }
