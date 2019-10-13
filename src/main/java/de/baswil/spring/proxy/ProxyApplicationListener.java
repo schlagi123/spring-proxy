@@ -3,14 +3,17 @@ package de.baswil.spring.proxy;
 import de.baswil.spring.proxy.configuration.Configurations;
 import de.baswil.spring.proxy.configuration.ConfigurationsReader;
 import de.baswil.spring.proxy.configuration.Constants;
+import de.baswil.spring.proxy.httpproxy.HttpPropertyProxySettingsParser;
+import de.baswil.spring.proxy.httpproxy.HttpUrlProxySettingsParser;
+import de.baswil.spring.proxy.httpsproxy.HttpsPropertyProxySettingsParser;
+import de.baswil.spring.proxy.httpsproxy.HttpsUrlProxySettingsParser;
 import de.baswil.spring.proxy.noproxy.*;
+import de.baswil.spring.proxy.proxy.ProxySettings;
+import de.baswil.spring.proxy.proxy.ProxySettingsAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.core.env.ConfigurableEnvironment;
-
-import java.util.Map;
 
 /**
  * <p>
@@ -57,15 +60,11 @@ public class ProxyApplicationListener implements ApplicationListener<Application
     }
 
     private void checkAndSetHttpProxy(Configurations configurations) {
-        final ProxySettingsFactory proxySettingsFactory = new ProxySettingsFactory();
+        HttpPropertyProxySettingsParser propertyParser = new HttpPropertyProxySettingsParser(configurations);
+        HttpUrlProxySettingsParser urlParser = new HttpUrlProxySettingsParser(configurations);
+        ProxySettingsAnalyzer analyzer = new ProxySettingsAnalyzer(urlParser, propertyParser);
 
-        final ProxySettings proxySettings = proxySettingsFactory.createProxySettings(
-                configurations.getOsHttpProxy(),
-                configurations.getAppHttpProxyHost(),
-                configurations.getAppHttpProxyPort(),
-                configurations.getAppHttpProxyUser(),
-                configurations.getAppHttpProxyPassword()
-        );
+        ProxySettings proxySettings = analyzer.analyze();
 
         if (proxySettings == null) {
             LOGGER.debug("No http proxy settings found");
@@ -86,15 +85,11 @@ public class ProxyApplicationListener implements ApplicationListener<Application
     }
 
     private void checkAndSetHttpsProxy(Configurations configurations) {
-        final ProxySettingsFactory proxySettingsFactory = new ProxySettingsFactory();
+        HttpsPropertyProxySettingsParser propertyParser = new HttpsPropertyProxySettingsParser(configurations);
+        HttpsUrlProxySettingsParser urlParser = new HttpsUrlProxySettingsParser(configurations);
+        ProxySettingsAnalyzer analyzer = new ProxySettingsAnalyzer(urlParser, propertyParser);
 
-        final ProxySettings proxySettings = proxySettingsFactory.createProxySettings(
-                configurations.getOsHttpsProxy(),
-                configurations.getAppHttpsProxyHost(),
-                configurations.getAppHttpsProxyPort(),
-                configurations.getAppHttpsProxyUser(),
-                configurations.getAppHttpsProxyPassword()
-        );
+        ProxySettings proxySettings = analyzer.analyze();
 
         if (proxySettings == null) {
             LOGGER.debug("No https proxy settings found");
@@ -117,10 +112,7 @@ public class ProxyApplicationListener implements ApplicationListener<Application
     private void checkAndSetNoProxy(Configurations configurations) {
         NoProxyFormatterFactory formatterFactory = new NoProxyFormatterFactory(configurations);
         NoProxyHostsConverter converter = new NoProxyHostsConverter(formatterFactory);
-        String value = converter.convert(
-                configurations.getOsNoProxy(),
-                configurations.getAppNonProxyHosts()
-        );
+        String value = converter.convert(configurations.getOsNoProxy(), configurations.getAppNonProxyHosts());
 
         if (value != null) {
             LOGGER.info("Setup no proxy");
@@ -134,19 +126,6 @@ public class ProxyApplicationListener implements ApplicationListener<Application
             LOGGER.trace("Set system property: {} = ******", systemPropertyName);
         } else {
             LOGGER.trace("Set system property: {} = {}", systemPropertyName, systemPropertyValue);
-        }
-    }
-
-    private String getOsEnvironmentVariable(Map<String, Object> systemEnvironment, String name) {
-        Object lowerCaseValue = systemEnvironment.get(name.toLowerCase());
-        Object upperCaseValue = systemEnvironment.get(name.toUpperCase());
-
-        if (lowerCaseValue != null) {
-            return lowerCaseValue.toString();
-        } else if (upperCaseValue != null) {
-            return upperCaseValue.toString();
-        } else {
-            return null;
         }
     }
 }
