@@ -1,12 +1,19 @@
 package de.baswil.spring.proxy;
 
+import de.baswil.spring.proxy.configuration.Configurations;
+import de.baswil.spring.proxy.configuration.ConfigurationsReader;
+import de.baswil.spring.proxy.httpproxy.HttpPropertyProxySettingsParser;
+import de.baswil.spring.proxy.httpproxy.HttpUrlProxySettingsParser;
+import de.baswil.spring.proxy.httpsproxy.HttpsPropertyProxySettingsParser;
+import de.baswil.spring.proxy.httpsproxy.HttpsUrlProxySettingsParser;
+import de.baswil.spring.proxy.noproxy.*;
+import de.baswil.spring.proxy.proxy.ProxySettings;
+import de.baswil.spring.proxy.proxy.ProxySettingsAnalyzer;
+import de.baswil.spring.proxy.sys.SystemPropertyWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.core.env.ConfigurableEnvironment;
-
-import java.util.Map;
 
 /**
  * <p>
@@ -36,132 +43,63 @@ import java.util.Map;
  */
 public class ProxyApplicationListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(ProxyApplicationListener.class);
-
-    private static final String OS_PROP_HTTP_PROXY = "http_proxy";
-    static final String JAVA_PROP_HTTP_PROXY_HOST = "http.proxyHost";
-    static final String JAVA_PROP_HTTP_PROXY_PORT = "http.proxyPort";
-    static final String JAVA_PROP_HTTP_PROXY_USER = "http.proxyUser";
-    static final String JAVA_PROP_HTTP_PROXY_PASSWORD = "http.proxyPassword";
-
-    private static final String OS_PROP_HTTPS_PROXY = "https_proxy";
-    static final String JAVA_PROP_HTTPS_PROXY_HOST = "https.proxyHost";
-    static final String JAVA_PROP_HTTPS_PROXY_PORT = "https.proxyPort";
-    static final String JAVA_PROP_HTTPS_PROXY_USER = "https.proxyUser";
-    static final String JAVA_PROP_HTTPS_PROXY_PASSWORD = "https.proxyPassword";
-
-    private static final String OS_PROP_NO_PROXY = "no_proxy";
-    static final String JAVA_PROP_HTTP_NO_PROXY_HOSTS = "http.nonProxyHosts";
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProxyApplicationListener.class);
 
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
         LOGGER.debug("PROXY LISTENER START");
 
-        ConfigurableEnvironment springEnvironment = event.getEnvironment();
-        Map<String, Object> systemEnvironment = springEnvironment.getSystemEnvironment();
+        Configurations configurations = createConfigurations(event);
+        SystemPropertyWriter systemPropertyWriter = createSystemPropertyWriter();
 
-        checkAndSetHttpProxy(springEnvironment, systemEnvironment);
-        checkAndSetHttpsProxy(springEnvironment, systemEnvironment);
-
-        checkAndSetNoProxy(springEnvironment, systemEnvironment);
+        checkAndSetHttpProxy(configurations, systemPropertyWriter);
+        checkAndSetHttpsProxy(configurations, systemPropertyWriter);
+        checkAndSetNoProxy(configurations, systemPropertyWriter);
 
         LOGGER.debug("PROXY LISTENER END");
     }
 
-    private void checkAndSetHttpProxy(ConfigurableEnvironment environment, Map<String, Object> systemEnvironment) {
-        final ProxySettingsFactory proxySettingsFactory = new ProxySettingsFactory();
-
-        final String osProperty = getOsEnvironmentVariable(systemEnvironment, OS_PROP_HTTP_PROXY);
-        final String javaPropertyHost = environment.getProperty(JAVA_PROP_HTTP_PROXY_HOST);
-        final String javaPropertyPort = environment.getProperty(JAVA_PROP_HTTP_PROXY_PORT);
-        final String javaPropertyUser = environment.getProperty(JAVA_PROP_HTTP_PROXY_USER);
-        final String javaPropertyPassword = environment.getProperty(JAVA_PROP_HTTP_PROXY_PASSWORD);
-
-        final ProxySettings proxySettings = proxySettingsFactory.createProxySettings(osProperty,
-                javaPropertyHost, javaPropertyPort, javaPropertyUser, javaPropertyPassword);
-
-        if (proxySettings == null) {
-            LOGGER.debug("No http proxy settings found");
-        } else {
-            LOGGER.info("Setup http proxy");
-            setSystemProperty(JAVA_PROP_HTTP_PROXY_HOST, proxySettings.getHost(), false);
-            if (proxySettings.getPort() != null) {
-                setSystemProperty(JAVA_PROP_HTTP_PROXY_PORT, String.valueOf(proxySettings.getPort()), false);
-            }
-            if (proxySettings.getUser() != null) {
-                setSystemProperty(JAVA_PROP_HTTP_PROXY_USER, proxySettings.getUser(), false);
-            }
-            if (proxySettings.getPassword() != null) {
-                setSystemProperty(JAVA_PROP_HTTP_PROXY_PASSWORD, proxySettings.getPassword(), true);
-            }
-        }
-
+    private void checkAndSetHttpProxy(Configurations configurations, SystemPropertyWriter systemPropertyWriter) {
+        ProxySettingsAnalyzer analyzer = createHttpProxyAnalyzer(configurations);
+        ProxySettings proxySettings = analyzer.analyze();
+        systemPropertyWriter.writeHttpProxySettings(proxySettings);
     }
 
-    private void checkAndSetHttpsProxy(ConfigurableEnvironment environment, Map<String, Object> systemEnvironment) {
-        final ProxySettingsFactory proxySettingsFactory = new ProxySettingsFactory();
-
-        final String osProperty = getOsEnvironmentVariable(systemEnvironment, OS_PROP_HTTPS_PROXY);
-        final String javaPropertyHost = environment.getProperty(JAVA_PROP_HTTPS_PROXY_HOST);
-        final String javaPropertyPort = environment.getProperty(JAVA_PROP_HTTPS_PROXY_PORT);
-        final String javaPropertyUser = environment.getProperty(JAVA_PROP_HTTPS_PROXY_USER);
-        final String javaPropertyPassword = environment.getProperty(JAVA_PROP_HTTPS_PROXY_PASSWORD);
-
-        final ProxySettings proxySettings = proxySettingsFactory.createProxySettings(osProperty,
-                javaPropertyHost, javaPropertyPort, javaPropertyUser, javaPropertyPassword);
-
-        if (proxySettings == null) {
-            LOGGER.debug("No https proxy settings found");
-        } else {
-            LOGGER.info("Setup https proxy");
-            setSystemProperty(JAVA_PROP_HTTPS_PROXY_HOST, proxySettings.getHost(), false);
-            if (proxySettings.getPort() != null) {
-                setSystemProperty(JAVA_PROP_HTTPS_PROXY_PORT, String.valueOf(proxySettings.getPort()), false);
-            }
-            if (proxySettings.getUser() != null) {
-                setSystemProperty(JAVA_PROP_HTTPS_PROXY_USER, proxySettings.getUser(), false);
-            }
-            if (proxySettings.getPassword() != null) {
-                setSystemProperty(JAVA_PROP_HTTPS_PROXY_PASSWORD, proxySettings.getPassword(), true);
-            }
-        }
-
+    private void checkAndSetHttpsProxy(Configurations configurations, SystemPropertyWriter systemPropertyWriter) {
+        ProxySettingsAnalyzer analyzer = createHttpsProxyAnalyzer(configurations);
+        ProxySettings proxySettings = analyzer.analyze();
+        systemPropertyWriter.writeHttpsProxySettings(proxySettings);
     }
 
-    private void checkAndSetNoProxy(ConfigurableEnvironment environment, Map<String, Object> systemEnvironment) {
-        ProxySettingsFactory proxySettingsFactory = new ProxySettingsFactory();
-
-        String osProperty = getOsEnvironmentVariable(systemEnvironment, OS_PROP_NO_PROXY);
-        String javaProperty = environment.getProperty(JAVA_PROP_HTTP_NO_PROXY_HOSTS);
-
-        final String value = proxySettingsFactory.createNonProxyHosts(osProperty, javaProperty);
-
-        if (value != null) {
-            LOGGER.info("Setup no proxy");
-            setSystemProperty(JAVA_PROP_HTTP_NO_PROXY_HOSTS, value, false);
-        }
+    private void checkAndSetNoProxy(Configurations configurations, SystemPropertyWriter systemPropertyWriter) {
+        NoProxyAnalyzer analyzer = createNoProxyAnalyzer(configurations);
+        String noProxySettings = analyzer.analyze();
+        systemPropertyWriter.writeNoProxySettings(noProxySettings);
     }
 
-    private void setSystemProperty(String systemPropertyName, String systemPropertyValue, boolean password) {
-        System.setProperty(systemPropertyName, systemPropertyValue);
-        if (password) {
-            LOGGER.trace("Set system property: {} = ******", systemPropertyName);
-        } else {
-            LOGGER.trace("Set system property: {} = {}", systemPropertyName, systemPropertyValue);
-        }
+    protected ProxySettingsAnalyzer createHttpProxyAnalyzer(Configurations configurations) {
+        HttpPropertyProxySettingsParser propertyParser = new HttpPropertyProxySettingsParser(configurations);
+        HttpUrlProxySettingsParser urlParser = new HttpUrlProxySettingsParser(configurations);
+        return new ProxySettingsAnalyzer(urlParser, propertyParser);
     }
 
-    private String getOsEnvironmentVariable(Map<String, Object> systemEnvironment, String name) {
-        Object lowerCaseValue = systemEnvironment.get(name.toLowerCase());
-        Object upperCaseValue = systemEnvironment.get(name.toUpperCase());
+    protected ProxySettingsAnalyzer createHttpsProxyAnalyzer(Configurations configurations) {
+        HttpsPropertyProxySettingsParser propertyParser = new HttpsPropertyProxySettingsParser(configurations);
+        HttpsUrlProxySettingsParser urlParser = new HttpsUrlProxySettingsParser(configurations);
+        return new ProxySettingsAnalyzer(urlParser, propertyParser);
+    }
 
-        if (lowerCaseValue != null) {
-            return lowerCaseValue.toString();
-        } else if (upperCaseValue != null) {
-            return upperCaseValue.toString();
-        } else {
-            return null;
-        }
+    protected NoProxyAnalyzer createNoProxyAnalyzer(Configurations configurations) {
+        NoProxyFormatterFactory formatterFactory = new NoProxyFormatterFactory(configurations);
+        return new NoProxyAnalyzer(configurations, formatterFactory);
+    }
+
+    protected Configurations createConfigurations(ApplicationEnvironmentPreparedEvent event) {
+        ConfigurationsReader configurationsReader = new ConfigurationsReader(event.getEnvironment());
+        return configurationsReader.readConfigurations();
+    }
+
+    protected SystemPropertyWriter createSystemPropertyWriter() {
+        return new SystemPropertyWriter();
     }
 }

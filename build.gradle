@@ -1,13 +1,13 @@
 plugins {
     id 'java'
     id 'groovy'
-    id 'info.solidsoft.pitest' version '1.4.0'
+    id 'info.solidsoft.pitest' version '1.4.5'
     id "com.jfrog.bintray" version '1.8.4'
     id "maven-publish"
 }
 
 group 'de.baswil.spring'
-version '1.1'
+version '1.2'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -16,20 +16,15 @@ repositories {
     jcenter()
 }
 
-test {
-    //we want display the following test events
-    testLogging {
-        // set options for log level LIFECYCLE
-        events "failed", "started", "skipped", "failed"
-    }
-}
-
 ext {
     springBootVersion = "2.1.7.RELEASE"
 }
 
 dependencies {
     compile "org.springframework.boot:spring-boot-starter:$springBootVersion"
+
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
 
     testCompile "junit:junit:4.12"
     testCompile "org.codehaus.groovy:groovy-all:2.5.8"
