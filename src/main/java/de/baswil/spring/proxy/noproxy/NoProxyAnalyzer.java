@@ -1,16 +1,24 @@
 package de.baswil.spring.proxy.noproxy;
 
+import de.baswil.spring.proxy.configuration.Configurations;
+
 import java.util.List;
 import java.util.StringJoiner;
 
-public class NoProxyHostsConverter {
+public class NoProxyAnalyzer {
+    private final Configurations configurations;
     private final NoProxyFormatterFactory noProxyFormatterFactory;
 
-    public NoProxyHostsConverter(NoProxyFormatterFactory noProxyFormatterFactory) {
+    public NoProxyAnalyzer(Configurations configurations,
+                           NoProxyFormatterFactory noProxyFormatterFactory) {
+        this.configurations = configurations;
         this.noProxyFormatterFactory = noProxyFormatterFactory;
     }
 
-    public String convert(String osPropertyValue, String javaPropertyValue) {
+    public String analyze() {
+        String osPropertyValue = configurations.getOsNoProxy();
+        String javaPropertyValue = configurations.getAppNonProxyHosts();
+
         if(javaPropertyValue != null){
             if(javaPropertyValue.trim().isEmpty()){
                 return null;
